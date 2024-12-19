@@ -52,17 +52,16 @@ The new per-input types are defined as follows:
 | rowspan="2"| 0, 2
 |-
 | The MuSig2 aggregate public key (compressed) <ref>'''Why the compressed aggregate public key instead of x-only?'''
-BIP 32 requires public keys to include their evenness byte. Aggregate public keys are expected to be
-derived from, following [[bip-0328.mediawiki|BIP 328]], and therefore will
-need to include the evenness. Furthermore, PSBT_IN_TAP_BIP32_DERIVATION fields include fingerprints
-to identify master keys, and these fingerprints require y-coordinate of the public key,
-so x-only serialization can't be used. By including
-the aggregate key as a full public key, signers that are unaware of the MuSig2 outside of the PSBT
-will still be able to identify which keys are derived from the aggregate key by computing and then
-comparing the fingerprints. This is necessary for the signer to apply the correct tweaks to their
-partial signature.</ref> from the <tt>KeyAgg</tt> algorithm. This key may or may not appear
-(as x-only) in the Taproot output key, the internal key, or in a script. It may instead be a parent public
-key from which the Taproot output key, internal key, or keys in a script were derived.
+BIP 32 public keys can be derived from a BIP 327 MuSig2 aggregate public key (see: [[bip-0328.mediawiki|BIP 328]]).
+But since BIP 32 requires public keys to include their evenness byte, BIP 327 MuSig2 aggregate public keys must
+include their evenness byte as well. Furthermore, PSBT_IN_TAP_BIP32_DERIVATION fields include fingerprints to identify
+master keys, and these fingerprints require the y-coordinate of the public key, so x-only serialization can't be used.
+By including the aggregate key as a full public key, signers that are unaware of the MuSig2 outside of the PSBT will
+still be able to identify which keys are derived from the aggregate key by computing and then comparing the
+fingerprints. This is necessary for the signer to apply the correct tweaks to their partial signature.</ref> from the
+<tt>KeyAgg</tt> algorithm. This key may or may not appear (as x-only) in the Taproot output key, the internal key, or
+in a script. It may instead be a parent public key from which the Taproot output key, internal key, or keys in a script
+were derived.
 | A list of the compressed public keys of the participants in the MuSig2 aggregate key in the order
 required for aggregation. If sorting was done, then the keys must be in the sorted order.
 |-
@@ -130,7 +129,7 @@ required for aggregation. If sorting was done, then the keys must be in the sort
 ===Updater===
 
 When an updater observes a Taproot output which involves a MuSig2 aggregate public key that it is
-aware if, it can add a <tt>PSBT_IN_MUSIG2_PARTICIPANT_PUBKEYS</tt> field containing the public keys
+aware of, it can add a <tt>PSBT_IN_MUSIG2_PARTICIPANT_PUBKEYS</tt> field containing the public keys
 of the participants. This aggregate public key may be directly in the script, the Taproot internal
 key, the Taproot output key, or a public key from which the key in the script was derived from.
 
@@ -171,7 +170,7 @@ partial signature for their key. The result will be added to the PSBT in a
 <tt>PSBT_IN_MUSIG2_PARTIAL_SIG</tt> field.
 
 Signers must remember to apply any relevant tweaks such as a tweak that is the result of performing
-BIP 32 unhardened dervation with the aggregate public key as the parent key.
+BIP 32 unhardened derivation with the aggregate public key as the parent key.
 
 If all other signers have provided a <tt>PSBT_IN_MUSIG2_PARTIAL_SIG</tt>, then the final signer may
 perform the <tt>PartialSigAgg</tt> algorithm and produce a BIP 340 compatible signature that can be
