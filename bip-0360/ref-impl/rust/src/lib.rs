@@ -127,9 +127,7 @@ fn create_huffman_tree(leaf_script_type: LeafScriptType) -> (Vec<(u32, ScriptBuf
                 let schnorr_pubkey = keypairs.schnorr_keypair().unwrap().public_key_bytes();
                 let slh_dsa_pubkey = keypairs.slh_dsa_keypair().unwrap().public_key_bytes();
 
-                // Debug: Print the private key used for script construction
-                info!("SLH-DSA DEBUG: Script construction using private key: {}", hex::encode(keypairs.slh_dsa_keypair().unwrap().secret_key_bytes()));
-                info!("SLH-DSA DEBUG: Script construction using public key: {}", hex::encode(&slh_dsa_pubkey));
+                debug!("SLH-DSA DEBUG: Script construction using public key: {}", hex::encode(&slh_dsa_pubkey));
 
                 // Combined script: <Schnorr_PubKey> OP_CHECKSIG <SLH_DSA_PubKey> OP_SUBSTR OP_BOOLAND OP_VERIFY
                 let mut script_buf_bytes = vec![0x20]; // OP_PUSHBYTES_32
@@ -270,9 +268,8 @@ pub fn create_p2tr_multi_leaf_taptree(p2tr_internal_pubkey_hex: String) -> Taptr
     let output_key_parity: Parity = p2tr_spend_info.output_key_parity();
     let output_key: XOnlyPublicKey = p2tr_spend_info.output_key().into();
 
-    info!("keypairs_of_interest: \n\tsecret_bytes: {:?} \n\tpubkeys: {:?} \n\tmerkle_root: {}",
-        keypairs_of_interest.secret_key_bytes().iter().map(|bytes| hex::encode(bytes)).collect::<Vec<_>>(),  // secret_bytes returns big endian
-        keypairs_of_interest.public_key_bytes().iter().map(|bytes| hex::encode(bytes)).collect::<Vec<_>>(),  // serialize returns little endian
+    info!("keypairs_of_interest: \n\tpubkeys: {:?} \n\tmerkle_root: {}",
+        keypairs_of_interest.public_key_bytes().iter().map(|bytes| hex::encode(bytes)).collect::<Vec<_>>(),
         merkle_root);
 
     let tap_tree: TapTree = p2tr_builder.clone().try_into_taptree().unwrap();
@@ -487,8 +484,6 @@ pub fn pay_to_p2wpkh_tx(
             let slh_dsa_secret_key: bitcoinpqc::SecretKey = bitcoinpqc::SecretKey::try_from_slice(
                 Algorithm::SLH_DSA_128S, &leaf_script_priv_keys_bytes[1]).unwrap();
             
-            // Debug: Print the private key being used for signature creation
-            info!("SLH-DSA DEBUG: Using private key for signature creation: {}", hex::encode(&leaf_script_priv_keys_bytes[1]));
             
             let slh_dsa_signature = sign(&slh_dsa_secret_key, spend_msg.as_ref()).expect("Failed to sign with SLH-DSA-128S");
             debug!("SchnorrAndSlhDsa slh_dsa_signature.bytes: {:?}", slh_dsa_signature.bytes.len());

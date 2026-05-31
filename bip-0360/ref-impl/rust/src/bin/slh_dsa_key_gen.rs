@@ -22,7 +22,7 @@ fn main() {
         .expect("Failed to generate SLH-DSA-128S keypair");
 
     info!("public key size / value = {}, {}", public_key_size(Algorithm::SLH_DSA_128S), hex::encode(&keypair.public_key.bytes));
-    info!("private key size / value = {}, {}", secret_key_size(Algorithm::SLH_DSA_128S), hex::encode(&keypair.secret_key.bytes));
+    info!("private key size = {}", secret_key_size(Algorithm::SLH_DSA_128S));
 
 }
 

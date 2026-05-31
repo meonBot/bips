@@ -32,9 +32,9 @@ echo -en "\nLoop_COUNT = $LOOP_COUNT\nBITCOIN_CONF_FILE_PATH=$BITCOIN_CONF_FILE_
 for ((i=1; i<=LOOP_COUNT; i++))
 do
     echo "Iteration $i of $LOOP_COUNT"
-    $BITCOIN_SOURCE_DIR/contrib/signet/miner --cli "bitcoin-cli -conf=$BITCOIN_CONF_FILE_PATH" generate \
-        --address $P2MR_ADDR \
+    "$BITCOIN_SOURCE_DIR/contrib/signet/miner" --cli "bitcoin-cli -conf=$BITCOIN_CONF_FILE_PATH" generate \
+        --address "$P2MR_ADDR" \
         --grind-cmd "$BITCOIN_SOURCE_DIR/build/bin/bitcoin-util grind" \
         --poolid "$POOL_ID" \
-        --min-nbits --set-block-time $(date +%s)
+        --min-nbits --set-block-time "$(date +%s)"
 done
